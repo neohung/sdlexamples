@@ -19,7 +19,7 @@ void game_clear_with_color(unsigned char red, unsigned char green, unsigned char
     int i,j;
     unsigned char alpha = 0xFF;
     unsigned int color = red << 24 | green << 16 | blue << 8 | alpha;
-    printf("color=0x%X\n",color);
+    //printf("color=0x%X\n",color);
     for (i=0;i<SCREEN_WIDTH;i++){
         for (j=0;j<SCREEN_HEIGHT;j++){
             screen_pixels[i+j*SCREEN_WIDTH] = color;  
