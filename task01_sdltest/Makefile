@@ -9,7 +9,7 @@ SRCS = game.cpp main.cpp
 
 # Project name
 #PROJ_NAME=$(current_dir)
-PROJ_NAME=$(notdir $(CURDIR)) 
+PROJ_NAME=$(notdir $(CURDIR))
 OUTPATH=build
 
 ###################################################

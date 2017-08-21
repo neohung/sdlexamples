@@ -9,22 +9,22 @@ typedef struct _LIST_ELEMENT{
 
 
 typedef struct _LIST{
-	//void *data;
 	unsigned int size;
 	LIST_ELEMENT *head;
 	LIST_ELEMENT *tail;
+	void (*destroy)(void* data);
 } LIST;
 
-LIST* list_new();
+LIST* list_new(void (*destroy)(void* data));
 void list_destory(LIST* list);
 unsigned int list_size(LIST* list);
 LIST_ELEMENT* list_tail(LIST* list);
+//element_after=NULL means add to head
 bool list_add(LIST* list, LIST_ELEMENT* element_after, void* data);
-void list_print_int(LIST* list);
-//
-//ListElement * list_item_at(List *list, u32 index);
-//void * list_remove(List *list, ListElement *element) ;
-//void list_remove_element_with_data(List *list, void *data);
-//ListElement * list_search(List *list, void * data);
-//
+//element=NULL means remove head element
+void * list_remove(LIST *list, LIST_ELEMENT *element);
+LIST_ELEMENT* list_get_element_at(LIST* list, unsigned int index);
+void* list_remove_element_with_data(LIST *list, void *data);
+LIST_ELEMENT* list_get_element_with_data(LIST *list, void *data);
+
 #endif

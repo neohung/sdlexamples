@@ -23,6 +23,19 @@ void quit_window()
     isLooping = false;    
 }
 
+void render_test(UIView* view)
+{
+	if (view == NULL){
+		printf("NULL\n");
+		return;
+	}
+	ui_view_clear(view);
+	UIRect rect = {10,10,SCREEN_WIDTH/4,SCREEN_HEIGHT/4};
+	ui_view_draw_rect(view, rect, 0xFF000055);
+	UIRect rect2 = {20,20,SCREEN_WIDTH/8,SCREEN_HEIGHT/8};
+	ui_view_draw_rect(view, rect2, 0x0000FFFE);
+}
+
 int main()
 {
     srand(unsigned(time(NULL)));
@@ -38,28 +51,14 @@ int main()
     SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear");
     SDL_RenderSetLogicalSize(renderer, SCREEN_WIDTH, SCREEN_HEIGHT);
     SDL_Texture *screenTexture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_STREAMING, SCREEN_WIDTH, SCREEN_HEIGHT);
-    //
-    LIST* l;
-    int a1 =1;
-    int a2 =2;
-    int a3 =3;
-    
-    LIST* ll = list_new();
-    printf("%p\n",ll);
-    list_add(ll, NULL, &a1);
-
-    //list_add(ll, list_tail(ll), &a2);
-    //list_add(ll, list_tail(ll), &a3);
-    list_add(ll, NULL, &a2);
-    list_add(ll, NULL, &a3);
-    list_print_int(ll);
-    
-    list_destory(ll);
-
-    
-    
-    
-    //
+    //========================================================
+    UIRect rect = {0,0,SCREEN_WIDTH/2,SCREEN_HEIGHT/2};
+    UIView* v = ui_view_new(&rect, NULL,render_test);
+    LIST* viewList = list_new(free);
+    list_add(viewList, NULL,v);
+    UIScreen *s = ui_screen_new(viewList,NULL);
+    game_set_active_screen(s);
+    //========================================================
     unsigned int timePerFrame = 1000 / FPS ;
     unsigned int current_ticks = 0;
     while(isLooping){

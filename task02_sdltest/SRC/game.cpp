@@ -1,6 +1,18 @@
 #include "SDL.h"
 #include "game.h"
 
+static UIScreen* active_screen = NULL;
+
+UIScreen* game_get_active_screen()
+{
+	return active_screen;
+}
+
+void game_set_active_screen(UIScreen* s)
+{
+	active_screen = s;
+}
+
 static SDL_Rect screen_rect = {0,0,SCREEN_WIDTH,SCREEN_HEIGHT};
 //static char screen_pixels[SCREEN_WIDTH*SCREEN_HEIGHT*sizeof(unsigned int)];
 static unsigned int screen_pixels[SCREEN_WIDTH*SCREEN_HEIGHT];
@@ -22,7 +34,7 @@ void game_clear_with_color(unsigned char red, unsigned char green, unsigned char
     //printf("color=0x%X\n",color);
     for (i=0;i<SCREEN_WIDTH;i++){
         for (j=0;j<SCREEN_HEIGHT;j++){
-            screen_pixels[i+j*SCREEN_WIDTH] = color;  
+            //screen_pixels[i+j*SCREEN_WIDTH] = color;
         }       
     }
 }
@@ -33,9 +45,21 @@ void game_render(SDL_Renderer *renderer, SDL_Texture *screenTexture)
       //  printf("Can't get any Screen to Render!\n");
         SDL_RenderClear(renderer);
         //
-        game_clear_with_color(0x77, 0x77, 0x77);
+        //game_clear_with_color(0x77, 0x77, 0x77);
+        if (active_screen){
+        	LIST_ELEMENT *e = active_screen->views->head;
+        	while (e != NULL){
+        		UIView* v = (UIView*)e->data;
+        		//clear view pixels and rerender
+        		v->render(v);
+        		//UIRect r = {0,0,SCREEN_WIDTH/2,SCREEN_HEIGHT/2};
+        		//v->pixelRect = &r;gn
+        		SDL_UpdateTexture(screenTexture, v->pixelRect, v->pixels, v->pixelRect->w * sizeof(unsigned int));
+        		e = e->next;
+        	}
+        }
         //memset(screen_pixels, 0x000000FF,SCREEN_WIDTH*SCREEN_HEIGHT*sizeof(unsigned int));
-        SDL_UpdateTexture(screenTexture, &screen_rect, (void*)screen_pixels, SCREEN_WIDTH * sizeof(unsigned int));
+        //SDL_UpdateTexture(screenTexture, &screen_rect, (void*)screen_pixels, SCREEN_WIDTH * sizeof(unsigned int));
         //
         SDL_RenderCopy(renderer, screenTexture, NULL, NULL);
         SDL_RenderPresent(renderer);

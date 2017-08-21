@@ -1,7 +1,7 @@
 
 # Sources
 
-SRCS = list.cpp game.cpp main.cpp
+SRCS = ui.cpp list.cpp game.cpp main.cpp
 
 #SRCS = list.cpp ui.cpp main.cpp config.cpp map.cpp fov.cpp stringutil.cpp game.cpp 
 #SRCS += screen_show_in_game.cpp screen_show_ranking.cpp
@@ -9,7 +9,7 @@ SRCS = list.cpp game.cpp main.cpp
 
 # Project name
 #PROJ_NAME=$(current_dir)
-PROJ_NAME=$(notdir $(CURDIR)) 
+PROJ_NAME=$(notdir $(CURDIR))
 OUTPATH=build
 
 ###################################################
