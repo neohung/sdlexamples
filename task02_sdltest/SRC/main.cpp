@@ -23,17 +23,49 @@ void quit_window()
     isLooping = false;    
 }
 
+static BitmapImage* image;
+static unsigned int x=0,y=0;
 void render_test(UIView* view)
 {
 	if (view == NULL){
 		printf("NULL\n");
 		return;
 	}
-	ui_view_clear(view);
-	UIRect rect = {10,10,SCREEN_WIDTH/4,SCREEN_HEIGHT/4};
-	ui_view_draw_rect(view, rect, 0xFF000055);
-	UIRect rect2 = {20,20,SCREEN_WIDTH/8,SCREEN_HEIGHT/8};
-	ui_view_draw_rect(view, rect2, 0x0000FFFE);
+	view_clear(view);
+	//UIRect rect = {10,10,SCREEN_WIDTH/4,SCREEN_HEIGHT/4};
+	//view_draw_rect(view, rect, 0xFF000055);
+	//UIRect rect2 = {20,20,SCREEN_WIDTH/8,SCREEN_HEIGHT/8};
+	//view_draw_rect(view, rect2, 0x0000FFFE);
+	view_draw_image_at(view, image, x, y);
+}
+
+void keyevent(UIEvent event)
+{
+	 if (event.type == UIKEYDOWN) {
+		 UIKeycode key = KEYSYM(event);
+	     	 switch (key) {
+	         	 case SDLK_q: {
+	         		 quit_window();
+	             }
+	             break;
+	         	 case SDLK_UP: {
+	         		 y-=1;
+	         	 }
+	         	 break;
+	         	 case SDLK_DOWN: {
+	         		 y+=1;
+	         	 }
+	         	 break;
+	         	 case SDLK_LEFT: {
+	         		 x-=1;
+	         	 }
+	         	 break;
+	         	 case SDLK_RIGHT: {
+	         		 x+=1;
+	         	 }
+	         	 break;
+	         }
+	 }
 }
 
 int main()
@@ -52,11 +84,13 @@ int main()
     SDL_RenderSetLogicalSize(renderer, SCREEN_WIDTH, SCREEN_HEIGHT);
     SDL_Texture *screenTexture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_STREAMING, SCREEN_WIDTH, SCREEN_HEIGHT);
     //========================================================
-    UIRect rect = {0,0,SCREEN_WIDTH/2,SCREEN_HEIGHT/2};
+    image = ui_load_image("test.png");
+
+    UIRect rect = {0,0,SCREEN_WIDTH,SCREEN_HEIGHT};
     UIView* v = ui_view_new(&rect, NULL,render_test);
     LIST* viewList = list_new(free);
     list_add(viewList, NULL,v);
-    UIScreen *s = ui_screen_new(viewList,NULL);
+    UIScreen *s = ui_screen_new(viewList,keyevent);
     game_set_active_screen(s);
     //========================================================
     unsigned int timePerFrame = 1000 / FPS ;
@@ -77,6 +111,12 @@ int main()
                     }
                     break;
                 }
+            }
+            UIScreen *active_screen = game_get_active_screen();
+            if (active_screen){
+            	if (active_screen->handle_event){
+            		active_screen->handle_event(event);
+            	}
             }
         }
         //Do update
