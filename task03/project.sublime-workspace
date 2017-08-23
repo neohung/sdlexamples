@@ -1,0 +1,262 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"p",
+				"printf\tprintf …"
+			],
+			[
+				"comp",
+				"components"
+			],
+			[
+				"br",
+				"break"
+			],
+			[
+				"def",
+				"define"
+			],
+			[
+				"de",
+				"defense"
+			]
+		]
+	},
+	"buffers":
+	[
+	],
+	"build_system": "",
+	"build_system_choices":
+	[
+	],
+	"build_varint": "",
+	"command_palette":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"console":
+	{
+		"height": 0.0,
+		"history":
+		[
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"expanded_folders":
+	[
+		"/Users/neo/code/sdlexamples/task03"
+	],
+	"file_history":
+	[
+		"/Users/neo/code/sdlexamples/task03/project.sublime-project",
+		"/Users/neo/code/sdlexamples/task02_sdltest/SRC/game.cpp",
+		"/Users/neo/code/sdlexamples/task02_sdltest/SRC/main.cpp",
+		"/Users/neo/code/sdlexamples/task02_sdltest/SRC/ui.cpp",
+		"/Users/neo/code/sdlexample/SRC/game.cpp",
+		"/Users/neo/code/sdlexample/Inc/stringutil.h",
+		"/Users/neo/code/sdlexample/SRC/stringutil.cpp",
+		"/Users/neo/code/sdlexample/Inc/ui.h",
+		"/Users/neo/code/sdlexample/SRC/ui.cpp",
+		"/Users/neo/code/sdlexample/SRC/screen_show_in_game.cpp",
+		"/Users/neo/code/sdlexample/SRC/main.cpp",
+		"/Users/neo/code/sdlexample/SRC/fov.cpp",
+		"/Users/neo/code/sdlexample/Inc/game.h",
+		"/Users/neo/code/sdlexample/Makefile",
+		"/Users/neo/code/sdlexample/Src/config.cpp",
+		"/Users/neo/code/sdlexample/items.txt",
+		"/Users/neo/code/sdlexample/monsters.txt",
+		"/Users/neo/code/sdlexample/SRC/map.cpp",
+		"/Users/neo/code/sdlexample/SRC/config.cpp",
+		"/Users/neo/code/sdlexample/Src/screen_show_in_game.cpp",
+		"/Users/neo/code/sdlexample/Src/ui.cpp",
+		"/Users/neo/code/dungeonbash-1.7/Makefile"
+	],
+	"find":
+	{
+		"height": 23.0
+	},
+	"find_in_files":
+	{
+		"height": 93.0,
+		"where_history":
+		[
+			""
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+			"get_",
+			"get_appearance_prob",
+			"game_object_get_component",
+			"item_get_weight_carried",
+			"asciiMode",
+			"view_destroy",
+			"activeScreen",
+			"show_inventory_ove",
+			"show_inventory_overl",
+			"show_inventory_overlay",
+			"inventoryView",
+			"maxWeightAllowed",
+			";\n",
+			"player",
+			"item_add",
+			"item_",
+			"COMP_EQUIPMENT",
+			"item_add",
+			"item_",
+			"item_a",
+			"item_add",
+			"monsterConfig",
+			"itemConfig",
+			"level_init",
+			"String_Equals",
+			"Message",
+			"world",
+			"maxHP",
+			"npc_add",
+			"hitMod",
+			"toHitModifier",
+			"targetMap",
+			"MAP_HEIGHT",
+			"chasin",
+			"Movement",
+			"playerTookTurn",
+			"update",
+			"}\n",
+			"\t\t\n",
+			"}\n",
+			"ConfigEntity",
+			"game_object_destroy",
+			"\"};\n",
+			"10000",
+			"visibilityComps",
+			"testScreen",
+			"]);",
+			"UIRenderFunction",
+			"CXXFLAGS",
+			"endif",
+			"CXXFLAGS"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"sheets":
+			[
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 23.0
+	},
+	"input":
+	{
+		"height": 0.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"pinned_build_system": "Packages/Makefile/Make.sublime-build",
+	"project": "project.sublime-project",
+	"replace":
+	{
+		"height": 42.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_symbol":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"selected_group": 0,
+	"settings":
+	{
+	},
+	"show_minimap": true,
+	"show_open_files": true,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 150.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}
