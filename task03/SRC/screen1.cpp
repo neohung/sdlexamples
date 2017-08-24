@@ -18,7 +18,68 @@ typedef struct _message{
 #define map_w 39
 #define map_h 23
 
-bool map[map_w][map_h];
+static bool game_map[map_w][map_h];
+static LIST* rooms;
+//If check_rooms is null also return true
+bool is_in_rooms(LIST* check_rooms, UIRect rect)
+{
+	if (check_rooms == NULL)
+		return true;
+	LIST_ELEMENT *e = check_rooms->head;
+	while (e != NULL){
+		UIRect* r = (UIRect* )e->data;
+		if (rect.x > r->x) && (rect.x ){
+			return true;
+		}
+		e = e->next;
+	}
+	return false;
+}
+
+void map_generate()
+{
+	int i,j;
+	for(i=0;i<map_w;i++){
+		for(j=0;j<map_h;j++){
+			game_map[i][j] =  false; //True means can not walk	
+		}
+	}
+	/*
+	int ii = rand() % 2;
+			
+			if (ii == 0)
+			game_map[i][j] =  true; //True means can walk
+			else
+			game_map[i][j] =  false; //True means can not walk
+			*/
+	//Random x,y
+	int rooms_limit = 4;
+	while(rooms_limit > 0){
+	int room_x = rand() % map_w + 1;
+	int room_y = rand() % map_h + 1;
+	//game_map[x][y] =  true;
+	int room_w = rand() % 10 + 5;
+	int room_h = rand() % 10 + 5;
+	if (((room_x + room_w) >= map_w ) || ((room_y + room_h) >= map_h )){
+		continue;
+	}
+	UIRect rect = {room_x,room_y,room_w,room_h};
+	if (is_in_rooms(rooms, rect)){
+		continue;
+	}else{
+		printf("Got \n");
+	}
+	for(i=room_x;i<room_x+room_w;i++){
+		for(j=room_y;j<room_y+room_h;j++){
+			game_map[i][j] =  true;
+		}
+	}
+	//game_map[room_x][room_y] =  true;
+	rooms_limit--;
+	} 
+
+
+}
 
 void main_render_test(UIView* view)
 {
@@ -36,8 +97,10 @@ void main_render_test(UIView* view)
 	unsigned char ch = '#';
 	for(i=0;i<map_w;i++){
 		for(j=0;j<map_h;j++){
+			ch = '#';
+			
 			//view_put_char_at(UIView* view, unsigned char ch, int x, int y, unsigned int fgcolor, unsigned int bgcolor)
-			if (map[i][j]) //True means can walk
+			if (game_map[i][j] ) //True means can walk
 				ch = '.';
 			view_put_char_at(view, ch, i*view->font->cellWidth, j*view->font->cellHeight, 0x777777FE, 0x222222FE);
 		}
@@ -147,7 +210,7 @@ void keyevent(UIEvent event)
 	         	 }
 	         	 break;
 	         	 case SDLK_g:{
-	         		memset(map, 1, map_w*map_h);
+	         		memset(game_map, 1, map_w*map_h);
 	         	 }
 	         	 break;
 	         }
@@ -173,5 +236,9 @@ UIScreen* create_screen1(void)
     messageList = list_new(free);
 
     UIScreen *s = ui_screen_new(viewList,keyevent);
+    //
+    rooms = list_new(free);
+    map_generate();
+    //
     return s;
 }
