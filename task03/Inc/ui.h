@@ -55,5 +55,5 @@ void view_draw_image_at(UIView* view, BitmapImage *image, int x, int y);
 UIFont* ui_font_new(const char* filename, unsigned int cellWidth, unsigned int cellHeight,char firstCharAt);
 void view_put_char_at(UIView* view, unsigned char ch, int x, int y, unsigned int fgcolor, unsigned int bgcolor);
 void view_put_string_at(UIView* view, char *string, int x, int y, unsigned int fgcolor, unsigned int bgcolor, int x_offset);
-void view_put_rect_at(UIView* view,int dstX, int dstY, unsigned int rows, unsigned int cols, unsigned char borderWidth, unsigned int fgcolor, unsigned int bgcolor);
+void view_put_rect_at(UIView* view,int dstX, int dstY, unsigned int cols, unsigned int rows, unsigned char borderWidth, unsigned int fgcolor, unsigned int bgcolor);
 #endif

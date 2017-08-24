@@ -1,6 +1,8 @@
 #include "SDL.h"
 #include "game.h"
 
+#include <stdio.h>
+
 static UIScreen* active_screen = NULL;
 
 UIScreen* game_get_active_screen()
@@ -50,16 +52,14 @@ void game_render(SDL_Renderer *renderer, SDL_Texture *screenTexture)
         //
         //game_clear_with_color(0x77, 0x77, 0x77);
         if (active_screen){
-             printf("active_screen 0x%p\n", active_screen);
-        	LIST_ELEMENT *e = active_screen->views->head;
+            LIST_ELEMENT *e = active_screen->views->head;
         	while (e != NULL){
         		UIView* v = (UIView*)e->data;
         		//clear view pixels and rerender
-                printf("v: 0x%p\n", v);
-        		v->render(v);
-        		//UIRect r = {0,0,SCREEN_WIDTH/2,SCREEN_HEIGHT/2};
-        		//v->pixelRect = &r;gn
-        		SDL_UpdateTexture(screenTexture, v->pixelRect, v->pixels, v->pixelRect->w * sizeof(unsigned int));
+                v->render(v);
+        		//v->pixelRect = &r;
+        		//SDL_UpdateTexture(screenTexture,  v->pixelRect,tmp,v->pixelRect->w);
+        		SDL_UpdateTexture(screenTexture, v->pixelRect, v->pixels, v->pixelRect->w* sizeof(unsigned int));
         		e = e->next;
         	}
         }

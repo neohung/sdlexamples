@@ -64,10 +64,23 @@ UIView* ui_view_new(UIRect* rect, UIFont* font,void (*render)(UIView* view))
 		printf("%s: Fail to malloc VIEW\n", __func__);
 		return NULL;
 	}
-	newview->pixelRect = rect;
+
+	UIRect* pixelRect =  (UIRect*) malloc(sizeof(UIRect));
+	if (pixelRect == NULL){
+			printf("%s: Fail to malloc UIRect\n", __func__);
+			free(newview);
+			return NULL;
+	}
+	newview->pixelRect = pixelRect;
+	newview->pixelRect->x = rect->x;
+	newview->pixelRect->y = rect->y;
+	newview->pixelRect->w = rect->w;
+	newview->pixelRect->h = rect->h;
+
 	unsigned int* pixels = (unsigned int*) malloc(newview->pixelRect->h*newview->pixelRect->w*sizeof(unsigned int));
 	if (pixels == NULL){
 		printf("%s: Fail to malloc pixels\n", __func__);
+		free(newview->pixelRect);
 		free(newview);
 		return NULL;
 	}
@@ -135,7 +148,7 @@ BitmapImage* ui_load_image(const char* filename)
 	unsigned int *imageData = (unsigned int *)malloc(size);
 	memcpy(imageData, imgData, size);
 	if (system_is_little_endian()) {
-		//For little endian, the data is BGRß
+		//For little endian, the data is BGR
         unsigned int pixelCount = imgWidth * imgHeight;
         for (unsigned int i = 0; i < pixelCount; i++) {
             imageData[i] = SWAP_INTDATA(imageData[i]);
@@ -152,7 +165,7 @@ BitmapImage* ui_load_image(const char* filename)
 void view_draw_image_at(UIView* view, BitmapImage *image, int x, int y)
 {
 	 assert(x>=0 && y>=0);
-	 assert( x+image->width < view->pixelRect->w && y + +image->height < view->pixelRect->h);
+	 assert( x+image->width <= view->pixelRect->w && y +image->height <= view->pixelRect->h);
 	 unsigned int dstX = x;
 
 	 for (unsigned int srcY = 0; srcY < image->height; srcY++) {
@@ -199,26 +212,26 @@ void view_put_string_at(UIView* view, char *string, int x, int y, unsigned int f
     }
 }
 
-void view_put_rect_at(UIView* view,int dstX, int dstY, unsigned int rows, unsigned int cols, unsigned char borderWidth, unsigned int fgcolor, unsigned int bgcolor)
+void view_put_rect_at(UIView* view,int dstX, int dstY, unsigned int cols, unsigned int rows, unsigned char borderWidth, unsigned int fgcolor, unsigned int bgcolor)
 {
 	for (int y = 0; y < rows; y++) {
 		 for (int x = 0; x < cols; x++) {
 		 	unsigned char c = 0;
 		 	// 179 : 186;   (| , ||) Sides
-		 	// 218 : 201 「  Top left corner
+		 	// 218 : 201 Top left corner
 		 	// 191 : 187  Top right corner
 		 	// 196 : 205  (-,=) Top border
 		 	// 192 : 200  Bottom left corner
-		 	// 217 : 188  」Bottom right corner
+		 	// 217 : 188  Bottom right corner
 		 	// 196 : 205  Bottom border
 		 	// Sides 
-		 	if (x==0 || x==cols-1)
+		 	if (x==0 || x==(cols-1))
 		 		c = (borderWidth == 1) ? 179 : 186;
 		 	if (y==0){
 		 		c = (borderWidth == 1) ? 196 : 205;
 		 		if (x == 0){
 		 			c = (borderWidth == 1) ? 218 : 201;
-		 		}else if (x==cols-1){
+		 		}else if (x==(cols-1)){
 		 			c = (borderWidth == 1) ? 191 : 187;
 		 		}
 		 	}
