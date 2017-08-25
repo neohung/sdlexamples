@@ -20,64 +20,117 @@ typedef struct _message{
 
 static bool game_map[map_w][map_h];
 static LIST* rooms;
-//If check_rooms is null also return true
-bool is_in_rooms(LIST* check_rooms, UIRect rect)
+static int player_x;
+static int player_y;
+
+bool can_walk(bool map[][map_h], int x, int y)
 {
-	if (check_rooms == NULL)
-		return true;
-	LIST_ELEMENT *e = check_rooms->head;
-	while (e != NULL){
-		UIRect* r = (UIRect* )e->data;
-		if (rect.x > r->x) && (rect.x ){
-			return true;
+	return map[x][y];
+}
+
+//If check_rooms is null also return true
+bool is_in_rooms(bool map[][map_h], UIRect rect)
+{
+	int i,j;
+	for(i=rect.x-1;i<rect.x+rect.w+1;i++){
+		for(j=rect.y-1;j<rect.y+rect.h+1;j++){
+			if (map[i][j] ==  true){
+				return true;
+			}
 		}
-		e = e->next;
 	}
 	return false;
 }
 
-void map_generate()
+void get_random_point_from_rect(UIRect rect, int* x, int* y)
+{
+	int size = rect.w*rect.h;
+	int index = rand()%size;
+	*x = rect.x + (index % rect.w);
+	*y = rect.y + (index / rect.w);
+}
+
+// A Simple way to generate a simple maze
+void map_generate(bool map[][map_h])
 {
 	int i,j;
 	for(i=0;i<map_w;i++){
 		for(j=0;j<map_h;j++){
-			game_map[i][j] =  false; //True means can not walk	
+			map[i][j] =  false; //false means can not walk
 		}
 	}
-	/*
-	int ii = rand() % 2;
-			
-			if (ii == 0)
-			game_map[i][j] =  true; //True means can walk
-			else
-			game_map[i][j] =  false; //True means can not walk
-			*/
+	//
 	//Random x,y
-	int rooms_limit = 4;
-	while(rooms_limit > 0){
-	int room_x = rand() % map_w + 1;
-	int room_y = rand() % map_h + 1;
-	//game_map[x][y] =  true;
-	int room_w = rand() % 10 + 5;
-	int room_h = rand() % 10 + 5;
-	if (((room_x + room_w) >= map_w ) || ((room_y + room_h) >= map_h )){
-		continue;
-	}
-	UIRect rect = {room_x,room_y,room_w,room_h};
-	if (is_in_rooms(rooms, rect)){
-		continue;
-	}else{
-		printf("Got \n");
-	}
-	for(i=room_x;i<room_x+room_w;i++){
-		for(j=room_y;j<room_y+room_h;j++){
-			game_map[i][j] =  true;
-		}
-	}
-	//game_map[room_x][room_y] =  true;
-	rooms_limit--;
-	} 
 
+	int rooms_limit = 5;
+
+	while(rooms_limit > 0){
+
+		int room_x = rand() % map_w + 1;
+		int room_y = rand() % map_h + 1;
+		int room_w = rand() % 10 + 5;
+		int room_h = rand() % 10 + 5;
+		if (((room_x + room_w) >= map_w ) || ((room_y + room_h) >= map_h )){
+			continue;
+		}
+		UIRect rect = {room_x,room_y,room_w,room_h};
+		//Check if is full wall not cross the room
+		if (is_in_rooms(game_map, rect)){
+			continue;
+		}
+		//
+		for(i=rect.x;i<rect.x+rect.w;i++){
+			for(j=rect.y;j<rect.y+rect.h;j++){
+				game_map[i][j] =  true;
+			}
+		}
+		UIRect* room_rect = (UIRect*)malloc(sizeof(UIRect));
+		if (room_rect == NULL){
+			printf("%s: Fail to malloc room_rect\n", __func__);
+			return;
+		}
+		room_rect->x = rect.x;
+		room_rect->y = rect.y;
+		room_rect->h = rect.h;
+		room_rect->w = rect.w;
+		list_add(rooms,NULL,room_rect);
+		rooms_limit--;
+	} 
+	// Gen Rooms finish
+	LIST_ELEMENT *e = rooms->head;
+	while(e != NULL){
+		UIRect* r1 = (UIRect*)e->data;
+		if (e->next == NULL){
+			break;
+		}
+		UIRect* r2 = (UIRect*)e->next->data;
+
+		int srcX,srcY,dstX,dstY;
+		get_random_point_from_rect(*r1, &srcX, &srcY);
+		get_random_point_from_rect(*r2, &dstX, &dstY);
+
+		int xx = dstX;
+		int yy = srcY;
+		if (srcX > dstX){
+					int tmp = dstX;
+					dstX = srcX;
+					srcX = tmp;
+					xx = srcX;
+		}
+		for(i=srcX;i<=dstX;i++){
+				map[i][yy] =  true; //True means can walk
+		}
+
+		if (srcY > dstY){
+					int tmp = dstY;
+					dstY = srcY;
+					srcY = tmp;
+		}
+		for(j=srcY;j<=dstY;j++){
+			map[xx][j] =  true; //True means can walk
+		}
+		e = e->next;
+	}
 
 }
 
@@ -88,23 +141,27 @@ void main_render_test(UIView* view)
 		return;
 	}
 	view_clear(view);
-
-	UIRect rect = {10,10,SCREEN_WIDTH/4,SCREEN_HEIGHT/4};
-	view_draw_rect(view, rect, 0xFF000055);
-	UIRect rect2 = {20,20,SCREEN_WIDTH/8,SCREEN_HEIGHT/8};
-	view_draw_rect(view, rect2, 0x0000FFFE);
+	//UIRect rect = {10,10,SCREEN_WIDTH/4,SCREEN_HEIGHT/4};
+	//view_draw_rect(view, rect, 0xFF000055);
+	//UIRect rect2 = {20,20,SCREEN_WIDTH/8,SCREEN_HEIGHT/8};
+	//view_draw_rect(view, rect2, 0x0000FFFE);
 	int i,j;
 	unsigned char ch = '#';
 	for(i=0;i<map_w;i++){
 		for(j=0;j<map_h;j++){
 			ch = '#';
-			
+			unsigned int fg = 0x777777FE;
 			//view_put_char_at(UIView* view, unsigned char ch, int x, int y, unsigned int fgcolor, unsigned int bgcolor)
 			if (game_map[i][j] ) //True means can walk
+			{
 				ch = '.';
-			view_put_char_at(view, ch, i*view->font->cellWidth, j*view->font->cellHeight, 0x777777FE, 0x222222FE);
+				fg = 0x2F2F2F22;
+			}
+			view_put_char_at(view, ch, i*view->font->cellWidth, j*view->font->cellHeight, fg, 0x222222FE);
 		}
 	}
+	ch = '@';
+	view_put_char_at(view, ch, player_x*view->font->cellWidth, player_y*view->font->cellHeight, 0xFF0000FE, 0x222222FE);
 }
 
 void message_render_test(UIView* view)
@@ -170,22 +227,26 @@ void keyevent(UIEvent event)
 	             }
 	             break;
 	         	 case SDLK_UP: {
-	         		 y-=1;
+	         		if (can_walk(game_map, player_x, player_y-1))
+	         			player_y-=1;
 	         		 add_message(messageList,(char*)"You press UP", 0xFFFFFFFF,0x00000000);
 	         	 }
 	         	 break;
 	         	 case SDLK_DOWN: {
-	         		 y+=1;
+	         		if (can_walk(game_map, player_x, player_y+1))
+	         		player_y+=1;
 	         		 add_message(messageList,(char*)"You press DOWN", 0xFFFFFFFF,0x00000000);
 	         	 }
 	         	 break;
 	         	 case SDLK_LEFT: {
-	         		 x-=1;
+	         		if (can_walk(game_map, player_x-1, player_y))
+	         		player_x-=1;
 	         		 add_message(messageList,(char*)"You press LEFT", 0xFFFFFFFF,0x00000000);
 	         	 }
 	         	 break;
 	         	 case SDLK_RIGHT: {
-	         		 x+=1;
+	         		if (can_walk(game_map, player_x+1, player_y))
+	         		player_x+=1;
 	         		 add_message(messageList,(char*)"You press RIGHT", 0xFFFFFFFF,0x00000000);
 	         	 }
 	         	 break;
@@ -238,7 +299,10 @@ UIScreen* create_screen1(void)
     UIScreen *s = ui_screen_new(viewList,keyevent);
     //
     rooms = list_new(free);
-    map_generate();
+    map_generate(game_map);
+
+    LIST_ELEMENT *e = rooms->head;
+    get_random_point_from_rect(*(UIRect*)e->data, &player_x, &player_y);
     //
     return s;
 }
