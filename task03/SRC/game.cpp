@@ -1,6 +1,8 @@
 #include "SDL.h"
 #include "game.h"
 
+#include "screen1.h"
+
 #include <stdio.h>
 
 static UIScreen* active_screen = NULL;
@@ -17,7 +19,9 @@ void game_set_active_screen(UIScreen* s)
 
 void game_update()
 {
-
+    if (is_update_screen1){
+        update_screen1();
+    }
 }
 
 void game_render(SDL_Renderer *renderer, SDL_Texture *screenTexture)

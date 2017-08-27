@@ -23,6 +23,11 @@ static LIST* rooms;
 static int player_x;
 static int player_y;
 
+static LIST* monsters;
+
+
+bool is_update_screen1;
+
 bool can_walk(bool map[][map_h], int x, int y)
 {
 	return map[x][y];
@@ -161,7 +166,7 @@ void main_render_test(UIView* view)
 		}
 	}
 	ch = '@';
-	view_put_char_at(view, ch, player_x*view->font->cellWidth, player_y*view->font->cellHeight, 0xFF0000FE, 0x222222FE);
+	view_put_char_at(view, ch, player_x*view->font->cellWidth, player_y*view->font->cellHeight, 0x00FF00FE, 0x222222FE);
 }
 
 void message_render_test(UIView* view)
@@ -278,6 +283,115 @@ void keyevent(UIEvent event)
 	 }
 }
 
+typedef enum {
+	POSITION,
+	VISIBILITY,
+	PHYSICALITY,
+	NUM_ATTR
+} Attributes;
+//-----------------------------------
+
+#define MAX_OSJECTS 10000
+#define UNUSED	-1   // For id
+
+typedef struct _Position
+{
+	int objId;
+	int x;
+	int y;
+	char layer;
+} Position;
+
+typedef struct _Visibility
+{
+	int objId;
+	char glyph;
+	char* name;
+	unsigned int fgcolor;
+	unsigned int bgcolor;
+	bool canBeenSeen;
+} Visibility;
+
+typedef struct _GameObject
+{
+	int id;
+	void* attr[NUM_ATTR];
+} GameObject;
+
+GameObject game_object[MAX_OSJECTS];
+
+//Visibility 
+LIST* game_vis_list;
+
+//------------------------------------
+
+void gameobject_init(GameObject* go)
+{
+	int i,j;
+	for (i=0 ; i < MAX_OSJECTS ; i++){
+		go[i].id = UNUSED;
+		for (j=0 ; j < NUM_ATTR ; j++){
+			go[i].attr[j] = NULL;
+		}
+	}
+}
+
+//Take UNUSED object and gen a id
+GameObject* gameobject_take(GameObject* go)
+{
+	int i,j;
+	for (i=0 ; i < MAX_OSJECTS ; i++){
+		if (go[i].id == UNUSED){
+			go[i].id = i;
+			for (j=0 ; j < NUM_ATTR ; j++){
+				go[i].attr[j] = NULL;
+			}
+			return &go[i];
+		}
+	}
+	return NULL;
+}
+
+void init()
+{
+    rooms = list_new(free);
+    map_generate(game_map);
+
+    LIST_ELEMENT *e = rooms->head;
+    get_random_point_from_rect(*(UIRect*)e->data, &player_x, &player_y);
+
+    monsters = list_new(free);
+
+    game_vis_list = list_new(free);
+
+    gameobject_init(game_object);
+
+    GameObject* g = gameobject_take(game_object);
+
+    Position* pos = (Position*) malloc(sizeof(Position));
+    g->attr[POSITION] = pos;
+    pos->objId = g->id;
+    pos->x = 1;
+	pos->y = 2;
+
+	Visibility* vis = (Visibility*) malloc(sizeof(Visibility));
+	g->attr[POSITION] = pos;
+	vis->objId = g->id;
+	vis->name = (char*)"mon1";
+	vis->glyph = '$';
+	vis->fgcolor = 0xFFFFFFFF;
+	vis->bgcolor = 0x00000000;
+	vis->canBeenSeen = true;
+
+	is_update_screen1 = true;
+}
+
+void update_screen1()
+{
+	printf("t\n");
+
+}
+
 UIScreen* create_screen1(void)
 {
 	
@@ -298,11 +412,7 @@ UIScreen* create_screen1(void)
 
     UIScreen *s = ui_screen_new(viewList,keyevent);
     //
-    rooms = list_new(free);
-    map_generate(game_map);
-
-    LIST_ELEMENT *e = rooms->head;
-    get_random_point_from_rect(*(UIRect*)e->data, &player_x, &player_y);
+    init();
     //
     return s;
 }
