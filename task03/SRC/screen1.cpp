@@ -1,5 +1,6 @@
 #include "screen1.h"
 #include "game.h"
+#include "list.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -384,11 +385,17 @@ void init()
 	vis->canBeenSeen = true;
 
 	is_update_screen1 = true;
+
+	list_add(game_vis_list, NULL,(void *)vis);
 }
 
 void update_screen1()
 {
-	printf("t\n");
+	LIST_ELEMENT* e = game_vis_list->head;
+	while(e != NULL){
+		//Visibility* vis =  = (Visibility*) e->data;
+		e = e->next;
+	}
 
 }
 
