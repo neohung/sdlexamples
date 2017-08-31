@@ -87,7 +87,7 @@ class SimpleHMM:
 		print temp/total
 
 def main():
-	print "%s" % ("開始")
+	print "%s" % (u"開始")
 	test = SimpleHMM()
 	test.fordward()
 	test.backward()
@@ -98,7 +98,7 @@ def main():
         
     #plt.hist(x, bins=50, color='blue')
     #pl.show()
-	print "%s" % ("結束")
+	print "%s" % (u"結束")
 
 if __name__ == '__main__':
     main()
