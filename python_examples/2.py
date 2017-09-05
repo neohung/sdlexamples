@@ -176,7 +176,7 @@ class SimpleHMM:
 			denominator = 0.0
 			for i in range (0,self.N,1):
 				for j in range (0,self.N,1):
-					self.xi[t][i][j] = self.alpha[t][i] * self.beta[t+1][j] * self.A[i][j] * self.B[j][obs_seq[t*1]]
+					self.xi[t][i][j] = self.alpha[t][i] * self.beta[t+1][j] * self.A[i][j] * self.B[j][obs_seq[t+1]]
 					denominator +=  self.xi[t][i][j]
 			for i in range (0,self.N,1):
 				for j in range (0,self.N,1):
