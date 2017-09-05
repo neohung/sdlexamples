@@ -7,19 +7,37 @@ class simple_hmm:
 		self.observations = ["red", "white"]
 		self.n_observations = len(self.observations)
 		#pi dim=1xN=1x3
-		self.startprob_ = np.array([0.2, 0.4, 0.4])
+		#self.startprob_ = np.array([0.2, 0.4, 0.4])
+		self.startprob_ = np.array([1./3, 1./3, 1./3])
+		
 		#A dim=NxN=3x3
-		self.transmat_ = np.array([
+		"""self.transmat_ = np.array([
                                             [0.5, 0.2, 0.3],
                                             [0.3, 0.5, 0.2],
                                             [0.2, 0.3, 0.5]
                                             ])
+		"""
+		self.transmat_ = np.array([
+                                            [1./3, 1./3, 1./3],
+                                            [1./3, 1./3, 1./3],
+                                            [1./3, 1./3, 1./3]
+                                            ])
 		#B dim=NxM=3x2
+		"""
 		self.emissionprob_ = np.array([
                                             [0.5, 0.5],
                                             [0.4, 0.6],
                                             [0.7, 0.3]
                                             ])
+		"""
+		self.emissionprob_ = np.array([
+                                            [1./2, 1./2],
+                                            [1./2, 1./2],
+                                            [1./2, 1./2]
+                                            ])
+		print "Init) startprob_: {0}" . format(self.startprob_)
+		print "Init) transmat_: {0}" . format(self.transmat_)
+		print "Init) emissionprob_: {0}" . format(self.emissionprob_)
 		#seen=1xT or Tx1?
 		self.seen = np.array([[0,1,0]]).T
 	def forward(self, obs_seq):
@@ -42,7 +60,9 @@ class simple_hmm:
 			result += self.alpha[t,i]
 		#Result should be 0.13022
 		#ln(0.13022) = np.log(0.13022) = -2.038545
+		print "Result: %f" % result
 		#print "Result: %f" % np.log(result)
+		
 		#return score(obs_seq)
 		return np.log(result)
 
@@ -117,8 +137,7 @@ class simple_hmm:
 		#print "vpro_reverse: {0}" . format(vpro_reverse)
 		return np.log(vpro_reverse), vpath_reverse
 	def computeGamma(self, obs_seq):
-		#
-		print "computeGamma"
+		#print "computeGamma"
 		self.n_obs_seq = obs_seq.shape[0]
 		#self.forward(obs_seq)
 		#self.backward(obs_seq)
@@ -133,7 +152,7 @@ class simple_hmm:
 		#print "gamma: {0}" . format(self.gamma)
 
 	def computeXi(self, obs_seq):
-		print "computeXi"
+		#print "computeXi"
 		self.n_obs_seq = obs_seq.shape[0]
 		self.xi = np.array( np.zeros((self.n_obs_seq-1,self.n_states,self.n_states)), dtype=np.float)
 		for t in range(0,self.n_obs_seq-1,1):
@@ -149,7 +168,7 @@ class simple_hmm:
 
 
 	def BaumWelch(self, O):
-		print "BaumWelch"
+		#print "BaumWelch"
 		L = len(O)
 		newpi = np.array( np.zeros((self.n_states)), dtype=np.float)
 		newA = np.array( np.zeros((self.n_states,self.n_states)), dtype=np.float)
@@ -162,23 +181,85 @@ class simple_hmm:
 		ratio = 1
 		while True:
 			Count+=1
-			if (Count > 3000):
-				print "pi: {0}" . format(self.startprob_)
-				print "A: {0}" . format(self.transmat_)
-				print "B: {0}" . format(self.emissionprob_)				
+			#E step
+			for l in range(L):
+				self.n_obs_seq = O[l].shape[0]
+				logp = self.forward(O[l])
+				self.backward(O[l])
+				self.computeGamma(O[l])
+				self.computeXi(O[l])
+				for i in range(0,self.n_states,1):
+					newpi[i] += self.gamma[0,i]
+					for j in range(0,self.n_states,1):
+						for t in range (0,self.n_obs_seq-1,1):
+							newA[i,j] =  self.xi[t,i,j]
+					for k in range (0,self.n_observations,1):
+						for t in range (0,self.n_obs_seq-1,1):
+							if (O[l,t] == k):
+								newB[i,k] +=  self.gamma[t,i]
+
+					for t in range (0,self.n_obs_seq-1,1):
+						denominator_newA[i] += self.gamma[t][i]
+						#print "denominator_newA: %f" % denominator_newA[i]
+						denominator_newB[i] += self.gamma[t][i]
+					denominator_newB[i] += self.gamma[self.n_obs_seq-1][i]
+			
+			#print "denominator_newA: {0}" . format(denominator_newA)
+			#print "denominator_newB: {0}" . format(denominator_newB)
+
+			#M step
+			for i in range(0,self.n_states,1):
+				self.startprob_[i] = 0.001*(1/self.n_states) + 0.999*(newpi[i]/L)
+				newpi[i] = 0
+				for j in range (0,self.n_states,1):
+					if (denominator_newA[i] == 0):
+						self.transmat_[i][j] =  0.001*(1/self.n_states)
+					else:
+						self.transmat_[i][j] =  0.001*(1/self.n_states) + 0.999*(newA[i][j]/denominator_newA[i])
+					newA[i][j] = 0
+				for k in range (0,self.n_observations,1):
+					if (denominator_newB[i] == 0):
+						self.emissionprob_[i][k] =  0.001*(1/self.n_observations)
+					else:
+						self.emissionprob_[i][k] =  0.001*(1/self.n_observations) + 0.999*(newB[i][k]/denominator_newB[i])
+					newB[i][k] = 0
+
+				denominator_newA[i] = 0
+				denominator_newB[i] = 0
+			if (Count > 100):	
 				break
+
+			delta = logp - prev_logp
+			print "%f/%f" % (delta, prev_delta)
+			prev_logp = logp
+			if (Count > 1):
+				if (delta == 0):
+					break
+				ratio = delta / prev_delta
+				#print "r=%f" % ratio
+				#print logp
+			prev_delta = delta
+
+		print "pi: {0}" . format(self.startprob_)
+		print "A: {0}" . format(self.transmat_)
+		print "B: {0}" . format(self.emissionprob_)				
+		print "Finish"
 
 def main():
 	h = simple_hmm()
-	h.forward(h.seen)
-	h.backward(h.seen)
-	logprob, box = h.viterbi(h.seen)
-	print "The ball picked: {0}" . format(map(lambda x: h.observations[x], h.seen.T[0]))
-	print "The hidden box: {0}" . format(map(lambda x: h.states[x], box))
-	h.computeGamma(h.seen)
-	h.computeXi(h.seen)
+	#h.forward(h.seen)
+	#h.backward(h.seen)
+	#logprob, box = h.viterbi(h.seen)
+	#print "The ball picked: {0}" . format(map(lambda x: h.observations[x], h.seen.T[0]))
+	#print "The hidden box: {0}" . format(map(lambda x: h.states[x], box))
+	#h.computeGamma(h.seen)
+	#h.computeXi(h.seen)
 	X = np.array([[0,1,0,1],[0,0,0,1],[1,0,1,1]])
 	h.BaumWelch(X)
+	print h.forward(X[0])
+	print h.forward(X[1])
+	print h.forward(X[2])
+
 
 
 if __name__ == '__main__':
