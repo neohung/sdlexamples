@@ -36,6 +36,9 @@ def main():
     model2 = hmm.MultinomialHMM(n_components=n_states, n_iter=20, tol=0.01)
     X2 = np.array([[0,1,0,1],[0,0,0,1],[1,0,1,1]])
     model2.fit(X2)
+    print np.exp(model2.score(X2[0]))
+    """
+    model2.fit(X2)
     #
     print model2.startprob_
     print model2.transmat_
@@ -53,5 +56,6 @@ def main():
     print model2.transmat_
     print model2.emissionprob_
     print model2.score(X2)
+    """
 if __name__ == '__main__':
     main()

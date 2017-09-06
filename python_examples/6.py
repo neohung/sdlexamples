@@ -212,21 +212,22 @@ class simple_hmm:
 				self.startprob_[i] = 0.001*(1/self.n_states) + 0.999*(newpi[i]/L)
 				newpi[i] = 0
 				for j in range (0,self.n_states,1):
-					if (denominator_newA[i] == 0):
-						self.transmat_[i][j] =  0.001*(1/self.n_states)
-					else:
-						self.transmat_[i][j] =  0.001*(1/self.n_states) + 0.999*(newA[i][j]/denominator_newA[i])
+					#if (denominator_newA[i] == 0):
+					#	self.transmat_[i][j] =  0.001*(1/self.n_states)
+					#else:
+					self.transmat_[i][j] =  0.001*(1/self.n_states) + 0.999*(newA[i][j]/denominator_newA[i])
 					newA[i][j] = 0
 				for k in range (0,self.n_observations,1):
-					if (denominator_newB[i] == 0):
-						self.emissionprob_[i][k] =  0.001*(1/self.n_observations)
-					else:
-						self.emissionprob_[i][k] =  0.001*(1/self.n_observations) + 0.999*(newB[i][k]/denominator_newB[i])
+					#if (denominator_newB[i] == 0):
+					#	self.emissionprob_[i][k] =  0.001*(1/self.n_observations)
+					#else:
+					#n_observations
+					self.emissionprob_[i][k] =  0.001*(1/self.n_observations) + 0.999*(newB[i][k]/denominator_newB[i])
 					newB[i][k] = 0
 
 				denominator_newA[i] = 0
 				denominator_newB[i] = 0
-			if (Count > 100):	
+			if (Count > 1):	
 				break
 
 			delta = logp - prev_logp
@@ -256,7 +257,7 @@ def main():
 	#h.computeXi(h.seen)
 	X = np.array([[0,1,0,1],[0,0,0,1],[1,0,1,1]])
 	h.BaumWelch(X)
-	print h.forward(X[0])
+	print "prob: %f" % np.exp(h.forward(X[0]))
 	print h.forward(X[1])
 	print h.forward(X[2])
 
