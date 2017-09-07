@@ -33,6 +33,7 @@ def main():
                   "audio/apple/apple10.wav",
 	            ]
 	data = np.zeros((len(filenames), 32000))
+	mfcc_data_list = []
 	#mfcc_features = np.zeros((len(filenames),13))
 	for n,file in enumerate(filenames):
 		_, d = wavfile.read(file)
@@ -40,10 +41,37 @@ def main():
 		data[n, :d.shape[0]] = d
 		#Rate=8000
 		mfcc_features = mfcc(d, 8000)
-		print mfcc_features.shape
+		mfcc_data_list.append(mfcc_features)
 	draw(data, 0,'Timeseries example for %s'% "Apple", 3500)
 	#audio/s1/12_01.wav
-
+	mfcc_whiten_datas = []
+	for i in range(len(mfcc_data_list)): 
+		temp=whiten(mfcc_data_list[i])
+		for j in range(len(temp)):
+			mfcc_whiten_datas.append(temp[j])
+	print "total have %d mfcc data in filenames" % len(mfcc_whiten_datas)
+	mfcc_datas_array = np.array(mfcc_whiten_datas)
+	#print mfcc_datas_array.shape
+	#kmanes
+	centroid=kmeans(mfcc_datas_array,5)[0]
+	#vq
+	label=vq(mfcc_datas_array,centroid)[0] 
+	print label
+	print mfcc_datas_array[0].shape
+	#print centroid.shape
+	#print np.array(mfcc_whiten_datas[0],(1,13)).shape
+	#print [mfcc_whiten_datas].shape
+	a = [ ]
+	a.append(mfcc_whiten_datas[0])
+	#a.append(mfcc_whiten_datas[0])
+	#a.append(mfcc_whiten_datas[0])
+	#a.append(mfcc_whiten_datas[0])
+	#a.append(mfcc_whiten_datas[0])
+	b = np.array(a)
+	#print b.shape
+	#print centroid.shape
+	#print vq(b,centroid)[0] 
+	"""
 	(rate,sig) = wavfile.read("audio/apple/apple10.wav")
 	print rate
     #mfcc_feat = 42x13
@@ -81,7 +109,7 @@ def main():
 	#beta = np.zeros((T,hmm.N),np.float)
 	#gamma = np.zeros((T,hmm.N),np.float)
 	#hmm.BaumWelch(L,T,O,alpha,beta,gamma,1000)
- 
+ 	"""
 
 if __name__ == "__main__":
     print "main"
